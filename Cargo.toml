@@ -1,8 +1,8 @@
-[package]
-name = "rust_playground"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+resolver = "2"
+members = [
+    "median_and_mode",
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+[workspace.dependencies]
+median_and_mode = { path = "median_and_mode", default-features = false }
