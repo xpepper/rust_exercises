@@ -26,14 +26,16 @@ fn median(numbers: &[i32]) -> f32 {
 
 fn mode(numbers: &[i32]) -> Option<i32> {
     let frequencies = compute_frequencies(numbers);
-    let max_frequency = frequencies.values().max().copied().unwrap_or(0);
-    let modes: Vec<_> = frequencies
+    let max_frequency = frequencies.values().max().copied()?;
+
+    let mut modes = frequencies
         .iter()
         .filter(|&(_, &frequency)| frequency == max_frequency)
-        .collect();
+        .map(|(&number, _)| number);
 
-    if modes.len() == 1 {
-        Some(*modes[0].0)
+    let first_mode = modes.next()?;
+    if modes.next().is_none() {
+        Some(first_mode)
     } else {
         None
     }
@@ -98,5 +100,5 @@ mod tests {
         let numbers = random_list_of_integers(100, 99);
         assert_eq!(numbers.len(), 100);
         assert!(numbers.iter().all(|&number| number >= 0 && number <= 99));
-    }    
+    }
 }
