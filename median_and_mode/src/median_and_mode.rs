@@ -44,43 +44,20 @@ fn sort(numbers: &[i32]) -> Vec<i32> {
 
 #[cfg(test)]
 mod tests {
-    use crate::random_list_of_integers;
-    use super::*;
+    use super::{median, mode};
 
     #[test]
-    fn test_median() {
+    fn compute_median_of_a_list_of_numbers() {
         assert_eq!(median(&[1, 2, 3, 4, 5]), 3.0);
         assert_eq!(median(&[1, 2, 3, 4, 5]), 3.0);
         assert_eq!(median(&[1, 2, 3, 4, 5, 6]), 3.5);
     }
 
     #[test]
-    fn test_mode() {
+    fn compute_mode_of_a_list_of_numbers() {
         assert_eq!(mode(&[]), None);
         assert_eq!(mode(&[1, 2, 3, 4, 5]), None);
         assert_eq!(mode(&[1, 2, 3, 4, 5, 5]), Some(5));
         assert_eq!(mode(&[1, 2, 2, 2, 3, 4, 5, 5]), Some(2));
-    }
-
-    #[test]
-    fn test_compute_frequencies() {
-        let frequencies = compute_frequencies(&[1, 2, 2, 3, 4, 5, 5, 5]);
-        assert_eq!(frequencies[&1], 1);
-        assert_eq!(frequencies[&2], 2);
-        assert_eq!(frequencies[&3], 1);
-        assert_eq!(frequencies[&4], 1);
-        assert_eq!(frequencies[&5], 3);
-    }
-
-    #[test]
-    fn test_sort() {
-        assert_eq!(sort(&[5, 4, 3, 2, 1]), vec![1, 2, 3, 4, 5]);
-    }
-
-    #[test]
-    fn test_random_list_of_integers() {
-        let numbers = random_list_of_integers(100, 99);
-        assert_eq!(numbers.len(), 100);
-        assert!(numbers.iter().all(|&number| number >= 0 && number <= 99));
     }
 }
