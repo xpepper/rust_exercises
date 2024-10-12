@@ -14,8 +14,7 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
 }
 
 fn is_vowel(char: &char) -> bool {
-    let vowels = ['a', 'e', 'i', 'o', 'u'];
-    vowels.contains(char)
+    matches!(char.to_ascii_lowercase(), 'a' | 'e' | 'i' | 'o' | 'u')
 }
 
 #[cfg(test)]
@@ -45,5 +44,17 @@ mod tests {
         assert_eq!(pig_latin("fourth"), "ourth-fay");
         assert_eq!(pig_latin("bob"), "ob-bay");
         assert_eq!(pig_latin("jim"), "im-jay");
+    }
+
+    #[test]
+    fn words_starting_with_uppercase_vowel_have_hay_added_at_the_end() {
+        assert_eq!(pig_latin("Apple"), "Apple-hay");
+        assert_eq!(pig_latin("Elephant"), "Elephant-hay");
+    }
+
+    #[test]
+    fn words_starting_with_uppercase_consonant_have_that_char_moved_to_the_end_and_ay_added() {
+        assert_eq!(pig_latin("First"), "irst-Fay");
+        assert_eq!(pig_latin("Bob"), "ob-Bay");
     }
 }
