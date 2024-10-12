@@ -39,6 +39,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "org_employee_cli"
+version = "0.1.0"
+
+[[package]]
 name = "pig_latin"
 version = "0.1.0"
 
