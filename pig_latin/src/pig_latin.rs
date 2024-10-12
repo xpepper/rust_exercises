@@ -5,7 +5,7 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
 
     let first_char = original_word.chars().next().unwrap();
     if !first_char.is_alphabetic() {
-        return original_word.to_string()
+        return original_word.to_string();
     }
 
     if is_vowel(&first_char) {
