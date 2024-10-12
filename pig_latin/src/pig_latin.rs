@@ -5,13 +5,17 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
 
     let first_char = original_word.chars().next().unwrap();
 
-    let vowels = ['a', 'e', 'i', 'o', 'u'];
-    if vowels.contains(&first_char) {
+    if is_vowel(&first_char) {
         format!("{original_word}-hay")
     } else {
         let string: String = original_word.chars().skip(1).collect();
         format!("{string}-{first_char}ay")
     }
+}
+
+fn is_vowel(char: &char) -> bool {
+    let vowels = ['a', 'e', 'i', 'o', 'u'];
+    vowels.contains(char)
 }
 
 #[cfg(test)]
