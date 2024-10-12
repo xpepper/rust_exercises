@@ -31,6 +31,6 @@ mod tests {
     fn test_random_list_of_integers() {
         let numbers = random_list_of_integers(100, 99);
         assert_eq!(numbers.len(), 100);
-        assert!(numbers.iter().all(|&number| number >= 0 && number <= 99));
+        assert!(numbers.iter().all(|&number| (0..=99).contains(&number)));
     }
 }
