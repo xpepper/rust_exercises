@@ -4,6 +4,9 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
     }
 
     let first_char = original_word.chars().next().unwrap();
+    if !first_char.is_alphabetic() {
+        return original_word.to_string()
+    }
 
     if is_vowel(&first_char) {
         format!("{original_word}-hay")
@@ -56,5 +59,12 @@ mod tests {
     fn words_starting_with_uppercase_consonant_have_that_char_moved_to_the_end_and_ay_added() {
         assert_eq!(pig_latin("First"), "irst-Fay");
         assert_eq!(pig_latin("Bob"), "ob-Bay");
+    }
+
+    #[test]
+    fn words_starting_with_non_alphabetic_characters_are_unchanged() {
+        assert_eq!(pig_latin("123abc"), "123abc");
+        assert_eq!(pig_latin("!hello"), "!hello");
+        assert_eq!(pig_latin("@rust"), "@rust");
     }
 }
