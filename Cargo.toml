@@ -3,6 +3,3 @@ resolver = "2"
 members = [
     "median_and_mode",
 ]
-
-[workspace.dependencies]
-median_and_mode = { path = "median_and_mode", default-features = false }
