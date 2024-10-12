@@ -1,4 +1,8 @@
 pub(crate) fn pig_latin(original_word: &str) -> String {
+    if original_word.is_empty() {
+        return String::new();
+    }
+
     let first_char = original_word.chars().next().unwrap();
 
     let vowels = ['a', 'e', 'i', 'o', 'u'];
@@ -15,6 +19,11 @@ mod tests {
     use super::pig_latin;
 
     #[test]
+    fn does_not_apply_on_empty_strings() {
+        assert_eq!(pig_latin(""), "");
+    }
+
+    #[test]
     fn words_starting_with_a_vowel_have_hay_added_at_the_end() {
         assert_eq!(pig_latin("apple"), "apple-hay");
         assert_eq!(pig_latin("elephant"), "elephant-hay");
@@ -24,7 +33,8 @@ mod tests {
     }
 
     #[test]
-    fn words_starting_with_a_consonant_have_that_char_moved_to_the_end_of_the_word_and_ay_is_added() {
+    fn words_starting_with_a_consonant_have_that_char_moved_to_the_end_of_the_word_and_ay_is_added()
+    {
         assert_eq!(pig_latin("first"), "irst-fay");
         assert_eq!(pig_latin("second"), "econd-say");
         assert_eq!(pig_latin("third"), "hird-tay");

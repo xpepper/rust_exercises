@@ -9,6 +9,3 @@ fn main() {
     println!("{}", pig_latin("è"));
     println!("{}", pig_latin("こんにちは"));
 }
-
-
-
