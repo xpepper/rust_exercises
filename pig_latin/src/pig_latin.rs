@@ -11,8 +11,7 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
     if is_vowel(&first_char) {
         format!("{original_word}-hay")
     } else {
-        let string: String = original_word.chars().skip(1).collect();
-        format!("{string}-{first_char}ay")
+        format!("{}-{first_char}ay", &original_word[1..])
     }
 }
 
