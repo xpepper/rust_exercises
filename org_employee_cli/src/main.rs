@@ -9,7 +9,7 @@ use std::io;
 use std::io::Write;
 
 fn main() {
-    let mut company: HashMap<String, Vec<String>> = HashMap::new();
+    let mut company = Company::new();
 
     loop {
         print!("Enter command: ");
@@ -29,8 +29,7 @@ fn main() {
             let employee = parts[1].to_string();
             let department = parts[3..].join(" ");
 
-            company.entry(department.clone()).or_default().push(employee.clone());
-            println!("Added {employee} to {department}");
+            company.add(employee.clone(), department.clone());
             println!("{:?}", company);
         } else {
             println!("Invalid command {}", parts.join(" "));
@@ -38,4 +37,19 @@ fn main() {
         }
     }
     println!("Goodbye!");
+}
+
+#[derive(Debug)]
+struct Company {
+    employees: HashMap<String, Vec<String>>,
+}
+impl Company {
+    fn new() -> Self {
+        Self { employees: HashMap::new() }
+    }
+
+    fn add(&mut self, employee: String, department: String) {
+        self.employees.entry(department.clone()).or_default().push(employee.clone());
+        println!("Added {employee} to {department}");
+    }
 }
