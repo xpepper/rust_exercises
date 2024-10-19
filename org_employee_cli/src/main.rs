@@ -10,14 +10,14 @@ use std::io::{BufRead, Write};
 use Command::{AddEmployee, Exit, Invalid};
 
 fn main() {
+    println!("Welcome to Org Employee CLI. Enter a command.");
+    io::stdout().flush().unwrap();
+
     run(io::stdin().lock(), io::stdout().lock());
 }
 
 fn run<R: BufRead, W: Write>(input: R, mut output: W) {
     let mut company = Company::new();
-
-    writeln!(output, "Welcome to Org Employee CLI. Enter a command.").unwrap();
-    output.flush().unwrap();
 
     for line in input.lines() {
         let command = line.expect("Failed to read line");
@@ -27,7 +27,6 @@ fn run<R: BufRead, W: Write>(input: R, mut output: W) {
             AddEmployee { name, department } => {
                 company.add(name.clone(), department.clone());
                 writeln!(output, "Added {} to {}.", name, department).unwrap();
-                writeln!(output, "{:?}", company).unwrap();
             }
             Exit => {
                 writeln!(output, "Goodbye!").unwrap();
@@ -91,7 +90,7 @@ mod tests {
         run(Cursor::new(input_data), &mut output);
 
         let output_str = String::from_utf8(output).expect("Failed to convert output to String");
-        let expected_output = "Welcome to Org Employee CLI. Enter a command.\nAdded Alice to Engineering.\nCompany { employees: {\"Engineering\": [\"Alice\"]} }\nAdded Bob to Sales.\nCompany { employees: {\"Sales\": [\"Bob\"], \"Engineering\": [\"Alice\"]} }\nGoodbye!\n";
+        let expected_output = "Added Alice to Engineering.\nAdded Bob to Sales.\nGoodbye!\n";
 
         assert_eq!(output_str, expected_output);
     }
