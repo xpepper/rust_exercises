@@ -89,9 +89,14 @@ mod tests {
 
         run(Cursor::new(input_data), &mut output);
 
-        let output_str = String::from_utf8(output).expect("Failed to convert output to String");
-        let expected_output = "Added Alice to Engineering.\nAdded Bob to Sales.\nGoodbye!\n";
+        assert_equals(
+            output,
+            "Added Alice to Engineering.\nAdded Bob to Sales.\nGoodbye!\n",
+        );
+    }
 
-        assert_eq!(output_str, expected_output);
+    fn assert_equals(output: Vec<u8>, expected_output: &str) {
+        let actual_output = String::from_utf8(output).expect("Failed to convert output to String");
+        assert_eq!(actual_output, expected_output);
     }
 }
