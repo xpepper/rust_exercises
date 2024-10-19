@@ -4,7 +4,7 @@ pub(crate) fn pig_latin(original_word: &str) -> String {
     }
 
     let first_char = original_word.chars().next().unwrap();
-    if !first_char.is_alphabetic() {
+    if !first_char.is_ascii_alphabetic() {
         return original_word.to_string();
     }
 
