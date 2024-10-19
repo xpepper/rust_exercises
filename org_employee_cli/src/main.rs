@@ -6,35 +6,38 @@
 
 use std::collections::HashMap;
 use std::io;
-use std::io::Write;
+use std::io::{BufRead, Write};
 use Command::{AddEmployee, Exit, Invalid};
 
 fn main() {
+    run(io::stdin().lock(), io::stdout().lock());
+}
+
+fn run<R: BufRead, W: Write>(input: R, mut output: W) {
     let mut company = Company::new();
 
-    loop {
-        print!("Enter command: ");
-        io::stdout().flush().unwrap();
+    writeln!(output, "Welcome to Org Employee CLI. Enter a command.").unwrap();
+    output.flush().unwrap();
 
-        let mut command = String::new();
-        io::stdin()
-            .read_line(&mut command)
-            .expect("Cannot read command");
+    for line in input.lines() {
+        let command = line.expect("Failed to read line");
         let command = command.trim();
 
         match parse_command(command) {
             AddEmployee { name, department } => {
                 company.add(name.clone(), department.clone());
-                println!("{:?}", company);
+                writeln!(output, "Added {} to {}.", name, department).unwrap();
+                writeln!(output, "{:?}", company).unwrap();
             }
-            Exit => break,
+            Exit => {
+                writeln!(output, "Goodbye!").unwrap();
+                break;
+            }
             Invalid => {
-                println!("Invalid command {}", command);
-                continue;
+                writeln!(output, "Invalid command {command}.").unwrap();
             }
         }
     }
-    println!("Goodbye!");
 }
 
 enum Command {
@@ -72,6 +75,24 @@ impl Company {
             .entry(department.clone())
             .or_default()
             .push(employee.clone());
-        println!("Added {employee} to {department}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn test_integration_add_employee() {
+        let input_data = "add Alice to Engineering\nadd Bob to Sales\nexit\n";
+        let mut output = Vec::new();
+
+        run(Cursor::new(input_data), &mut output);
+
+        let output_str = String::from_utf8(output).expect("Failed to convert output to String");
+        let expected_output = "Welcome to Org Employee CLI. Enter a command.\nAdded Alice to Engineering.\nCompany { employees: {\"Engineering\": [\"Alice\"]} }\nAdded Bob to Sales.\nCompany { employees: {\"Sales\": [\"Bob\"], \"Engineering\": [\"Alice\"]} }\nGoodbye!\n";
+
+        assert_eq!(output_str, expected_output);
     }
 }
