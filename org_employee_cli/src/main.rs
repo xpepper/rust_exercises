@@ -112,6 +112,7 @@ impl Company {
     pub(crate) fn all(&self) -> Vec<String> {
         self.employees
             .keys()
-            .map(|department| self.all_by(department.clone())).flatten().collect()
+            .flat_map(|department| self.all_by(department.clone()))
+            .collect()
     }
 }
