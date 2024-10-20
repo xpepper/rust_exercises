@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 use std::io;
 use std::io::{BufRead, Write};
-use Command::{AddEmployee, Exit, Invalid};
+use Command::{AddEmployee, Exit, Invalid, ListAll, ListAllInDepartment};
 
 fn main() {
     println!("Welcome to Org Employee CLI. Enter a command.");
@@ -32,6 +32,14 @@ fn run<R: BufRead, W: Write>(input: R, mut output: W) {
                 writeln!(output, "Goodbye!").unwrap();
                 break;
             }
+            ListAllInDepartment { department } => {
+                let employees = company.all_in_department(&department);
+                writeln!(output, "{:?}", employees).unwrap();
+            }
+            ListAll => {
+                let employees = company.all();
+                writeln!(output, "{:?}", employees).unwrap();
+            }
             Invalid => {
                 writeln!(output, "Invalid command {command}.").unwrap();
             }
@@ -41,16 +49,23 @@ fn run<R: BufRead, W: Write>(input: R, mut output: W) {
 
 enum Command {
     AddEmployee { name: String, department: String },
+    ListAllInDepartment { department: String },
+    ListAll,
     Exit,
     Invalid,
 }
 
 fn parse_command(command: &str) -> Command {
     let parts: Vec<&str> = command.split_whitespace().collect();
-    if parts[0].to_lowercase() == "add" && parts[2].to_lowercase() == "to" {
+    if is_add_employee(&parts) {
         let name = parts[1].to_string();
         let department = parts[3..].join(" ");
         AddEmployee { name, department }
+    } else if is_list_in_department(&parts) {
+        let department = parts[2..].join(" ");
+        ListAllInDepartment { department }
+    } else if is_list_all(&parts) {
+        ListAll
     } else if command.to_lowercase() == "exit" {
         Exit
     } else {
@@ -58,10 +73,23 @@ fn parse_command(command: &str) -> Command {
     }
 }
 
+fn is_add_employee(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "add" && parts[2].to_lowercase() == "to"
+}
+
+fn is_list_in_department(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "list" && parts[1].to_lowercase() == "department"
+}
+
+fn is_list_all(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "list" && parts[1].to_lowercase() == "all"
+}
+
 #[derive(Debug)]
 struct Company {
     employees: HashMap<String, Vec<String>>,
 }
+
 impl Company {
     fn new() -> Self {
         Self {
@@ -74,6 +102,30 @@ impl Company {
             .entry(department.clone())
             .or_default()
             .push(employee.clone());
+    }
+
+    pub(crate) fn all_in_department(&self, department: &String) -> Vec<String> {
+        let mut employees = self.all_by(department);
+        employees.sort();
+        employees
+    }
+
+    pub(crate) fn all(&self) -> Vec<String> {
+        let mut employees: Vec<String> = self
+            .employees
+            .keys()
+            .flat_map(|department| self.all_by(department))
+            .collect();
+
+        employees.sort();
+        employees
+    }
+
+    fn all_by(&self, department: &String) -> Vec<String> {
+        self.employees
+            .get(department)
+            .cloned()
+            .unwrap_or_else(Vec::new)
     }
 }
 
