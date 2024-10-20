@@ -92,11 +92,9 @@ impl Company {
     }
 
     pub(crate) fn all_by(&self, department: String) -> Vec<String> {
-        match self.employees.get(&department) {
-            Some(employees) => employees.clone(),
-            None => {
-                vec![]
-            }
-        }
+        self.employees
+            .get(&department)
+            .cloned()
+            .unwrap_or_else(Vec::new)
     }
 }
