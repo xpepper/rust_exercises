@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
-use Command::{AddEmployee, Exit, Invalid};
+use Command::{AddEmployee, Exit, Invalid, ListAllInDepartment};
 
 fn main() {
     let mut company = Company::new();
@@ -25,7 +25,11 @@ fn main() {
         match parse_command(command) {
             AddEmployee { name, department } => {
                 company.add(name.clone(), department.clone());
-                println!("{:?}", company);
+                println!("Added {name} to {department}");
+            }
+            ListAllInDepartment { department } => {
+                let employees = company.all_by(department.clone());
+                println!("{:?}", employees);
             }
             Exit => break,
             Invalid => {
@@ -39,6 +43,7 @@ fn main() {
 
 enum Command {
     AddEmployee { name: String, department: String },
+    ListAllInDepartment { department: String },
     Exit,
     Invalid,
 }
@@ -49,6 +54,9 @@ fn parse_command(command: &str) -> Command {
         let name = parts[1].to_string();
         let department = parts[3..].join(" ");
         AddEmployee { name, department }
+    } else if is_list_in_department(&parts) {
+        let department = parts[2..].join(" ");
+        ListAllInDepartment { department }
     } else if command.to_lowercase() == "exit" {
         Exit
     } else {
@@ -60,10 +68,15 @@ fn is_add_employee(parts: &[&str]) -> bool {
     parts[0].to_lowercase() == "add" && parts[2].to_lowercase() == "to"
 }
 
+fn is_list_in_department(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "list" && parts[1].to_lowercase() == "department"
+}
+
 #[derive(Debug)]
 struct Company {
     employees: HashMap<String, Vec<String>>,
 }
+
 impl Company {
     fn new() -> Self {
         Self {
@@ -76,6 +89,14 @@ impl Company {
             .entry(department.clone())
             .or_default()
             .push(employee.clone());
-        println!("Added {employee} to {department}");
+    }
+
+    pub(crate) fn all_by(&self, department: String) -> Vec<String> {
+        match self.employees.get(&department) {
+            Some(employees) => employees.clone(),
+            None => {
+                vec![]
+            }
+        }
     }
 }
