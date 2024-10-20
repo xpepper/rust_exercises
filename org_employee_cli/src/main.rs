@@ -16,11 +16,11 @@ fn main() {
         print!("Enter command: ");
         io::stdout().flush().unwrap();
 
-        let mut command = String::new();
+        let mut input_line = String::new();
         io::stdin()
-            .read_line(&mut command)
+            .read_line(&mut input_line)
             .expect("Cannot read command");
-        let command = command.trim();
+        let command = input_line.trim();
 
         match parse_command(command) {
             AddEmployee { name, department } => {
@@ -45,7 +45,7 @@ enum Command {
 
 fn parse_command(command: &str) -> Command {
     let parts: Vec<&str> = command.split_whitespace().collect();
-    if parts[0].to_lowercase() == "add" && parts[2].to_lowercase() == "to" {
+    if is_add_employee(&parts) {
         let name = parts[1].to_string();
         let department = parts[3..].join(" ");
         AddEmployee { name, department }
@@ -54,6 +54,10 @@ fn parse_command(command: &str) -> Command {
     } else {
         Invalid
     }
+}
+
+fn is_add_employee(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "add" && parts[2].to_lowercase() == "to"
 }
 
 #[derive(Debug)]
