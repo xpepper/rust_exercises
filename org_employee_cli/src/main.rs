@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 use std::io;
 use std::io::Write;
-use Command::{AddEmployee, Exit, Invalid, ListAllInDepartment};
+use Command::{AddEmployee, Exit, Invalid, ListAll, ListAllInDepartment};
 
 fn main() {
     let mut company = Company::new();
@@ -31,6 +31,10 @@ fn main() {
                 let employees = company.all_by(department.clone());
                 println!("{:?}", employees);
             }
+            ListAll => {
+                let employees = company.all();
+                println!("{:?}", employees);
+            }
             Exit => break,
             Invalid => {
                 println!("Invalid command {}", command);
@@ -44,6 +48,7 @@ fn main() {
 enum Command {
     AddEmployee { name: String, department: String },
     ListAllInDepartment { department: String },
+    ListAll,
     Exit,
     Invalid,
 }
@@ -57,6 +62,8 @@ fn parse_command(command: &str) -> Command {
     } else if is_list_in_department(&parts) {
         let department = parts[2..].join(" ");
         ListAllInDepartment { department }
+    } else if is_list_all(&parts) {
+        ListAll
     } else if command.to_lowercase() == "exit" {
         Exit
     } else {
@@ -70,6 +77,10 @@ fn is_add_employee(parts: &[&str]) -> bool {
 
 fn is_list_in_department(parts: &[&str]) -> bool {
     parts[0].to_lowercase() == "list" && parts[1].to_lowercase() == "department"
+}
+
+fn is_list_all(parts: &[&str]) -> bool {
+    parts[0].to_lowercase() == "list" && parts[1].to_lowercase() == "all"
 }
 
 #[derive(Debug)]
@@ -96,5 +107,11 @@ impl Company {
             .get(&department)
             .cloned()
             .unwrap_or_else(Vec::new)
+    }
+
+    pub(crate) fn all(&self) -> Vec<String> {
+        self.employees
+            .keys()
+            .map(|department| self.all_by(department.clone())).flatten().collect()
     }
 }
