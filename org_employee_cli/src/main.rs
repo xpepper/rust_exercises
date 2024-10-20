@@ -135,7 +135,7 @@ mod tests {
     use std::io::Cursor;
 
     #[test]
-    fn test_integration_add_employee() {
+    fn add_employees() {
         let input_data = "add Alice to Engineering\nadd Bob to Sales\nexit\n";
         let mut output = Vec::new();
 
@@ -144,6 +144,19 @@ mod tests {
         assert_equals(
             output,
             "Added Alice to Engineering.\nAdded Bob to Sales.\nGoodbye!\n",
+        );
+    }
+
+    #[test]
+    fn list_all() {
+        let input_data = "add Bob to Engineering\nadd Anna to Sales\nlist all\nexit\n";
+        let mut output = Vec::new();
+
+        run(Cursor::new(input_data), &mut output);
+
+        assert_equals(
+            output,
+            "Added Bob to Engineering.\nAdded Anna to Sales.\n[\"Anna\", \"Bob\"]\nGoodbye!\n",
         );
     }
 
