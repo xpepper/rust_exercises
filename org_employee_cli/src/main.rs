@@ -28,7 +28,7 @@ fn main() {
                 println!("Added {name} to {department}");
             }
             ListAllInDepartment { department } => {
-                let employees = company.all_by(&department);
+                let employees = company.all_in_department(&department);
                 println!("{:?}", employees);
             }
             ListAll => {
@@ -102,11 +102,10 @@ impl Company {
             .push(employee.clone());
     }
 
-    pub(crate) fn all_by(&self, department: &String) -> Vec<String> {
-        self.employees
-            .get(department)
-            .cloned()
-            .unwrap_or_else(Vec::new)
+    pub(crate) fn all_in_department(&self, department: &String) -> Vec<String> {
+        let mut employees = self.all_by(department);
+        employees.sort();
+        employees
     }
 
     pub(crate) fn all(&self) -> Vec<String> {
@@ -118,5 +117,12 @@ impl Company {
 
         employees.sort();
         employees
+    }
+
+    fn all_by(&self, department: &String) -> Vec<String> {
+        self.employees
+            .get(department)
+            .cloned()
+            .unwrap_or_else(Vec::new)
     }
 }
