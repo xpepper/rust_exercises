@@ -110,9 +110,13 @@ impl Company {
     }
 
     pub(crate) fn all(&self) -> Vec<String> {
-        self.employees
+        let mut employees: Vec<String> = self
+            .employees
             .keys()
             .flat_map(|department| self.all_by(department))
-            .collect()
+            .collect();
+
+        employees.sort();
+        employees
     }
 }
