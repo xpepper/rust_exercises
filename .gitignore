@@ -2,3 +2,4 @@
 /target-docker
 .idea/
 .DS_Store
+*/target-docker/
