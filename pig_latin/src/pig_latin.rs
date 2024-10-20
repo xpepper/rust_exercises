@@ -1,17 +1,20 @@
-pub(crate) fn pig_latin(original_word: &str) -> String {
+use std::borrow::Cow;
+
+pub(crate) fn pig_latin(original_word: &str) -> Cow<str> {
     if original_word.is_empty() {
-        return String::new();
+        return Cow::Borrowed("");
     }
 
     let first_char = original_word.chars().next().unwrap();
     if !first_char.is_ascii_alphabetic() {
-        return original_word.to_string();
+        return Cow::Borrowed(original_word);
     }
 
     if is_vowel(&first_char) {
-        format!("{original_word}-hay")
+        Cow::Owned(format!("{original_word}-hay"))
     } else {
-        format!("{}-{first_char}ay", &original_word[1..])
+        let rest = &original_word[1..];
+        Cow::Owned(format!("{rest}-{first_char}ay"))
     }
 }
 
