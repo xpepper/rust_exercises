@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 members = [
-    "median_and_mode", "org_employee_cli", "pig_latin",
+    "median_and_mode", "org_employee_cli", "pig_latin", "guessing_game"
 ]
