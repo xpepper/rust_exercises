@@ -6,43 +6,45 @@
 
 use std::collections::HashMap;
 use std::io;
-use std::io::Write;
+use std::io::{BufRead, Write};
 use Command::{AddEmployee, Exit, Invalid, ListAll, ListAllInDepartment};
 
 fn main() {
+    println!("Welcome to Org Employee CLI. Enter a command.");
+    io::stdout().flush().unwrap();
+
+    run(io::stdin().lock(), io::stdout().lock());
+}
+
+fn run<R: BufRead, W: Write>(input: R, mut output: W) {
     let mut company = Company::new();
 
-    loop {
-        print!("Enter command: ");
-        io::stdout().flush().unwrap();
-
-        let mut input_line = String::new();
-        io::stdin()
-            .read_line(&mut input_line)
-            .expect("Cannot read command");
-        let command = input_line.trim();
+    for line in input.lines() {
+        let command = line.expect("Failed to read line");
+        let command = command.trim();
 
         match parse_command(command) {
             AddEmployee { name, department } => {
                 company.add(name.clone(), department.clone());
-                println!("Added {name} to {department}");
+                writeln!(output, "Added {} to {}.", name, department).unwrap();
+            }
+            Exit => {
+                writeln!(output, "Goodbye!").unwrap();
+                break;
             }
             ListAllInDepartment { department } => {
                 let employees = company.all_in_department(&department);
-                println!("{:?}", employees);
+                writeln!(output, "{:?}", employees).unwrap();
             }
             ListAll => {
                 let employees = company.all();
-                println!("{:?}", employees);
+                writeln!(output, "{:?}", employees).unwrap();
             }
-            Exit => break,
             Invalid => {
-                println!("Invalid command {}", command);
-                continue;
+                writeln!(output, "Invalid command {command}.").unwrap();
             }
         }
     }
-    println!("Goodbye!");
 }
 
 enum Command {
@@ -124,5 +126,42 @@ impl Company {
             .get(department)
             .cloned()
             .unwrap_or_else(Vec::new)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn add_employees() {
+        let input_data = "add Alice to Engineering\nadd Bob to Sales\nexit\n";
+        let mut output = Vec::new();
+
+        run(Cursor::new(input_data), &mut output);
+
+        assert_equals(
+            output,
+            "Added Alice to Engineering.\nAdded Bob to Sales.\nGoodbye!\n",
+        );
+    }
+
+    #[test]
+    fn list_all() {
+        let input_data = "add Bob to Engineering\nadd Anna to Sales\nlist all\nexit\n";
+        let mut output = Vec::new();
+
+        run(Cursor::new(input_data), &mut output);
+
+        assert_equals(
+            output,
+            "Added Bob to Engineering.\nAdded Anna to Sales.\n[\"Anna\", \"Bob\"]\nGoodbye!\n",
+        );
+    }
+
+    fn assert_equals(output: Vec<u8>, expected_output: &str) {
+        let actual_output = String::from_utf8(output).expect("Failed to convert output to String");
+        assert_eq!(actual_output, expected_output);
     }
 }
